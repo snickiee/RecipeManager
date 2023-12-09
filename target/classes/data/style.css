@@ -240,6 +240,13 @@
     -fx-background-image: url("icons/plus.png");
 }
 
+.button.removebutton {
+    -fx-background-image: url("icons/minus.png");
+}
+.button.removebutton:hover {
+    -fx-background-image: url("icons/minus_hover.png");
+}
+
 .recipeplane {
     -fx-background-color: #eeeeee;
     -fx-background-radius: 10px;

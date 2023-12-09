@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,12 +15,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import recipemanager.MainApplication;
 import recipemanager.dataprocessing.DatabaseHandler;
-import recipemanager.recipe.Recipe;
-import recipemanager.recipe.RecipeIngredients;
-import recipemanager.recipe.RecipeParser;
-import recipemanager.recipe.RecipeSummary;
+import recipemanager.recipe.*;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainControllers {
@@ -338,6 +343,125 @@ public class MainControllers {
     // MAKE NEW RECIPE PAGE
     // --------------------------
 
+
+    //денис (создание, добавление рецепта в бд)
+//    @FXML
+//    private Button favPageButton;
+//    @FXML
+//    private Button cartPageButton;
+//    @FXML
+//    private Button selectionButton;
+
+    @FXML
+    private TextField recipeNameField;
+
+    @FXML
+    private TextField recipeCookingTimeField;
+
+    @FXML
+    private TextField recipeDifficultyField;
+
+    @FXML
+    private TextField recipeCategoryField;
+
+    @FXML
+    private TextField recipeCuisineField;
+
+    @FXML
+    private TextArea recipeIngredients1;
+    @FXML
+    private TextArea recipeStepsArea;
+    @FXML
+    private ImageView recipeImage1;
+
+    // кнопка добавления рецепта в базу данных
+    @FXML
+    public void addRecipeToDatabase(ActionEvent event) {
+        String title = recipeNameField.getText();
+        String cookingTime = recipeCookingTimeField.getText();
+        String difficulty = recipeDifficultyField.getText();
+        String category = recipeCategoryField.getText();
+        String cuisine = recipeCuisineField.getText();
+
+        String fullPath = recipeImage1.getImage().getUrl();
+        String imagePathCommon = "src/main/resources/data/images/" + fullPath.substring(fullPath.lastIndexOf("/") + 1);
+
+        List<String> ingredients = extractListFromTextArea(recipeIngredients1);
+        List<String> steps = new ArrayList<>();
+        List<String> imagePaths = new ArrayList<>();
+
+        for (Node child : recipeElementsVBox.getChildren()) {
+            if (child instanceof HBox) {
+                HBox stepBox = (HBox) child;
+
+                if (stepBox.getChildren().get(0) instanceof VBox) {
+                    VBox textAndButtonBox = (VBox) stepBox.getChildren().get(0);
+
+                    if (textAndButtonBox.getChildren().get(0) instanceof TextArea) {
+                        TextArea stepTextArea = (TextArea) textAndButtonBox.getChildren().get(0);
+                        steps.add(stepTextArea.getText());
+                    }
+                }
+                if (stepBox.getChildren().get(1) instanceof ImageView) {
+                    ImageView imageView = (ImageView) stepBox.getChildren().get(1);
+                    Image image = imageView.getImage();
+
+                    if (image != null) {
+                        String imagePath = "src/main/resources/data/images/" + imageView.getImage().getUrl().substring(imageView.getImage().getUrl().lastIndexOf("/") + 1);
+                        imagePaths.add(imagePath);
+                    } else {
+                        // Если изображение не загружено, добавьте пустую строку в список
+                        imagePaths.add("");
+                    }
+                }
+            }
+        }
+
+        // Создание объекта рецепта и его заполнение полученными данными
+        Recipe recipe = new Recipe();
+        recipe.setTitle(title);
+        recipe.setImagePath(imagePathCommon);
+        recipe.setCookingTime(cookingTime);
+        recipe.setDifficulty(difficulty);
+        recipe.setCategory(category);
+        recipe.setCuisine(cuisine);
+
+        // Создание объекта ингредиентов и шагов
+        RecipeIngredients recipeIngredients = new RecipeIngredients();
+        recipeIngredients.setIngredients(ingredients);
+
+        RecipeSteps recipeSteps = new RecipeSteps();
+        recipeSteps.setDescriptions(steps);
+        recipeSteps.setImagePaths(imagePaths);
+
+        // Установка ингредиентов и шагов в объекте рецепта
+        recipe.setIngredients(recipeIngredients);
+        recipe.setSteps(recipeSteps);
+
+        // Добавление рецепта в базу данных
+        DatabaseHandler.addRecipe(recipe);
+    }
+
+    //метод для разделения текста ингредиентов на отдельные ингредиенты
+    private List<String> extractListFromTextArea(TextArea textArea) {
+        String ingredientsText = textArea.getText();
+        List<String> ingredients = new ArrayList<>();
+
+        // Разделение текста по запятым, точкам, точкам с запятой и новой строке
+        String[] lines = ingredientsText.split("[.,;\\n]");
+
+        // Добавление каждого ингредиента в список
+        for (String line : lines) {
+            String ingredient = line.trim();
+            if (!ingredient.isEmpty()) {
+                ingredients.add(ingredient);
+            }
+        }
+
+        return ingredients;
+    }
+
+
     @FXML
     public AnchorPane stepAnchorPane;
 
@@ -347,8 +471,6 @@ public class MainControllers {
     @FXML
     public AnchorPane createRecipeAnchorPane;
 
-    @FXML
-    public ImageView recipeImage1;
 
 
     public void onMakeRecipePageClick(ActionEvent event) {
@@ -357,10 +479,24 @@ public class MainControllers {
         this.pagesList.getSelectionModel().select(1); // Предполагается, что здесь осуществляется переключение на страницу для создания рецепта
 
 
+        // Добавление ограничения на ввод чисел для recipeDuration
+        recipeCookingTimeField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                recipeCookingTimeField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        // Добавление ограничения на ввод чисел для recipeDifficulty
+        recipeDifficultyField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                recipeDifficultyField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
         recipeImage1.setOnMouseClicked(mouseEvent -> {
             FileChooser fileChooser = new FileChooser();
 
-// Добавляем фильтры для файлов изображений
+            // Добавляем фильтры для файлов изображений
             FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png");
             FileChooser.ExtensionFilter extFilterJPG = new FileChooser.ExtensionFilter("JPG files (*.jpg)", "*.jpg");
             fileChooser.getExtensionFilters().addAll(extFilterPNG, extFilterJPG);
@@ -368,21 +504,38 @@ public class MainControllers {
             Stage stage = (Stage) recipeElementsVBox.getScene().getWindow();
             File selectedFile = fileChooser.showOpenDialog(stage);
 
+            String targetPath = "src/main/resources/data/images/";
+
             if (selectedFile != null) {
                 try {
-                    Image image = new Image(selectedFile.toURI().toString());
+                    LocalDateTime now = LocalDateTime.now();
+                    String fileName = String.format("%s_common",
+                            now.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
+                    String extension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf("."));
+                    String uniqueFileName = fileName + extension;
+
+                    Path sourcePath = Paths.get(selectedFile.getAbsolutePath());
+                    Path targetImagePath = Paths.get(targetPath + uniqueFileName);
+
+                    Files.copy(sourcePath, targetImagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                    Image image = new Image(targetImagePath.toUri().toString());
                     recipeImage1.setImage(image);
+
+                    recipeImage1.setFitWidth(280); // Ширина, которую вы хотите установить
+                    recipeImage1.setFitHeight(187); // Высота, которую вы хотите установить
+                    recipeImage1.setPreserveRatio(false);
                 } catch (Exception e) {
-                    e.printStackTrace(); // Обработка ошибок загрузки изображения
+                    e.printStackTrace();
                 }
             }
-
         });
     }
 
 
+    private int currentStepNumber = 0;
+
     public void createNewStep(ActionEvent event) {
-        // Создание текстового поля для шага с применением стиля
         TextArea stepTextArea = new TextArea();
         stepTextArea.setStyle("-fx-font-family: 'Roboto Medium';" +
                 "-fx-font-size: 20px;" +
@@ -391,23 +544,20 @@ public class MainControllers {
                 "-fx-ellipses-string: \"...\";" +
                 "-fx-wrap-text: true;");
         stepTextArea.setPromptText("Введите шаг");
-        stepTextArea.setPrefSize(500, 250); // Настройка размеров текстового поля
+        stepTextArea.setPrefSize(500, 250);
 
-        // Создание кнопки для загрузки изображения
         Button uploadImageButton = new Button("Загрузить изображение");
-        ImageView imageView = new ImageView(); // Изначально пустое изображение
-        imageView.setFitWidth(250); // Установка ширины изображения
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(250);
         imageView.setFitHeight(170);
 
-        // Установка изображения-заглушки
-        Image placeholderImage = new Image(getClass().getResourceAsStream("/recipemanager/data/icons/image_placeholder.png"));
+        Image placeholderImage = new Image(getClass().getResourceAsStream("/data/icons/image_placeholder.png"));
         imageView.setImage(placeholderImage);
 
-        // Обработчик нажатия на изображение для загрузки нового изображения
         imageView.setOnMouseClicked(mouseEvent -> {
+            currentStepNumber++;
             FileChooser fileChooser = new FileChooser();
 
-// Добавляем фильтры для файлов изображений
             FileChooser.ExtensionFilter extFilterPNG = new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png");
             FileChooser.ExtensionFilter extFilterJPG = new FileChooser.ExtensionFilter("JPG files (*.jpg)", "*.jpg");
             fileChooser.getExtensionFilters().addAll(extFilterPNG, extFilterJPG);
@@ -419,11 +569,28 @@ public class MainControllers {
                 try {
                     Image image = new Image(selectedFile.toURI().toString());
                     imageView.setImage(image);
+
+                    Path sourcePath = Paths.get(selectedFile.getAbsolutePath());
+
+                    LocalDateTime now = LocalDateTime.now();
+                    int stepNumber = currentStepNumber;
+                    String fileName = String.format("%s_%d",
+                            now.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")),
+                            stepNumber);
+                    String extension = selectedFile.getName().substring(selectedFile.getName().lastIndexOf("."));
+                    String uniqueFileName = fileName + extension;
+
+                    Path targetImagePath = Paths.get("src/main/resources/data/images/" + uniqueFileName);
+
+                    Files.copy(sourcePath, targetImagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                    Image newImage = new Image(targetImagePath.toUri().toString());
+                    imageView.setImage(newImage);
+
                 } catch (Exception e) {
-                    e.printStackTrace(); // Обработка ошибок загрузки изображения
+                    e.printStackTrace();
                 }
             }
-
         });
 
         // Создание контейнера для текстового поля и изображения
@@ -439,6 +606,15 @@ public class MainControllers {
 
         createRecipeAnchorPane.setPrefHeight(createRecipeAnchorPane.getPrefHeight() + stepBox.getHeight() + 200); // Примерный отступ между элементами
 
+
+    }
+
+    public void removeStep(ActionEvent event) {
+        int totalSteps = recipeElementsVBox.getChildren().size();
+        if (totalSteps > 0) {
+            recipeElementsVBox.getChildren().remove(totalSteps - 1);
+            createRecipeAnchorPane.setPrefHeight(createRecipeAnchorPane.getPrefHeight() - 200); // Уменьшаем высоту на примерный отступ
+        }
     }
 
 

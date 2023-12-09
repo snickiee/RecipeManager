@@ -71,47 +71,47 @@
                               <content>
                                   <AnchorPane fx:id="createRecipeAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="1595.0" prefWidth="924.0" styleClass="recipestep">
                                       <children>
-                                          <TextField fx:id="linkInput1" alignment="TOP_LEFT" layoutX="221.0" layoutY="58.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="382.0" styleClass="textinput" stylesheets="@style.css">
+                                          <TextField fx:id="recipeNameField" alignment="TOP_LEFT" layoutX="221.0" layoutY="45.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="382.0" styleClass="textinput" stylesheets="@style.css">
                                               <font>
                                                   <Font name="Roboto Medium" size="19.0" />
                                               </font>
                                           </TextField>
-                                          <Label fx:id="previewRecipeTitleLabel1" alignment="CENTER" layoutX="90.0" layoutY="64.0" opacity="0.25" prefHeight="26.0" prefWidth="114.0" text="Название" wrapText="true">
+                                          <Label fx:id="previewRecipeTitleLabel1" alignment="CENTER" layoutX="90.0" layoutY="51.0" opacity="0.25" prefHeight="26.0" prefWidth="114.0" text="Название" wrapText="true">
                                               <font>
                                                   <Font name="Roboto" size="21.0" />
                                               </font>
                                           </Label>
-                                          <TextField fx:id="linkInput11" alignment="TOP_LEFT" layoutX="220.0" layoutY="119.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="90.0" styleClass="textinput" stylesheets="@style.css">
+                                          <TextField fx:id="recipeCookingTimeField" alignment="TOP_LEFT" layoutX="220.0" layoutY="95.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="90.0" styleClass="textinput" stylesheets="@style.css">
                                               <font>
                                                   <Font name="Roboto Medium" size="19.0" />
                                               </font>
                                           </TextField>
-                                          <Label fx:id="previewRecipeTitleLabel11" alignment="CENTER" layoutX="55.0" layoutY="125.0" opacity="0.25" prefHeight="26.0" prefWidth="150.0" text="Длительность" wrapText="true">
+                                          <Label fx:id="previewRecipeTitleLabel11" alignment="CENTER" layoutX="55.0" layoutY="101.0" opacity="0.25" prefHeight="26.0" prefWidth="150.0" text="Длительность" wrapText="true">
                                               <font>
                                                   <Font name="Roboto" size="21.0" />
                                               </font>
                                           </Label>
-                                          <Label fx:id="previewRecipeTitleLabel111" alignment="CENTER" layoutX="326.0" layoutY="125.0" opacity="0.25" prefHeight="26.0" prefWidth="60.0" text="мин." wrapText="true">
+                                          <Label fx:id="previewRecipeTitleLabel111" alignment="CENTER" layoutX="313.0" layoutY="101.0" opacity="0.25" prefHeight="26.0" prefWidth="60.0" text="мин." wrapText="true">
                                               <font>
                                                   <Font name="Roboto" size="21.0" />
                                               </font>
                                           </Label>
-                                          <TextField fx:id="linkInput111" alignment="TOP_LEFT" layoutX="220.0" layoutY="178.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="90.0" styleClass="textinput" stylesheets="@style.css">
+                                          <TextField fx:id="recipeDifficultyField" alignment="TOP_LEFT" layoutX="220.0" layoutY="144.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="90.0" styleClass="textinput" stylesheets="@style.css">
                                               <font>
                                                   <Font name="Roboto Medium" size="19.0" />
                                               </font>
                                           </TextField>
-                                          <Label fx:id="previewRecipeTitleLabel112" alignment="CENTER" layoutX="87.0" layoutY="184.0" opacity="0.25" prefHeight="26.0" prefWidth="117.0" text="Сложность" wrapText="true">
+                                          <Label fx:id="previewRecipeTitleLabel112" alignment="CENTER" layoutX="87.0" layoutY="150.0" opacity="0.25" prefHeight="26.0" prefWidth="117.0" text="Сложность" wrapText="true">
                                               <font>
                                                   <Font name="Roboto" size="21.0" />
                                               </font>
                                           </Label>
-                                          <Label fx:id="previewRecipeTitleLabel1111" alignment="CENTER" layoutX="326.0" layoutY="184.0" opacity="0.25" prefHeight="26.0" prefWidth="81.0" text="баллов" wrapText="true">
+                                          <Label fx:id="previewRecipeTitleLabel1111" alignment="CENTER" layoutX="313.0" layoutY="150.0" opacity="0.25" prefHeight="26.0" prefWidth="81.0" text="баллов" wrapText="true">
                                               <font>
                                                   <Font name="Roboto" size="21.0" />
                                               </font>
                                           </Label>
-                                          <TextArea fx:id="recipeIngredients1" editable="false" layoutX="217.0" layoutY="245.0" prefHeight="144.0" prefWidth="678.0" styleClass="textarea" text="- ...&#10;- ...">
+                                          <TextArea fx:id="recipeIngredients1" layoutX="217.0" layoutY="245.0" prefHeight="144.0" prefWidth="678.0" styleClass="textarea" text="- ...&#10;- ...">
                                               <font>
                                                   <Font name="Roboto Medium" size="20.0" />
                                               </font>
@@ -148,7 +148,7 @@
                                                   <Font name="Roboto" size="21.0" />
                                               </font>
                                           </Label>
-                                          <Button fx:id="addToCartButton1" alignment="CENTER" layoutX="12.0" layoutY="540.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="150.0" styleClass="regularbutton2" stylesheets="@style.css" text="Создать">
+                                          <Button fx:id="addRecipeButton" alignment="CENTER" layoutX="26.0" layoutY="578.0" mnemonicParsing="false" onAction="#addRecipeToDatabase" prefHeight="32.0" prefWidth="150.0" styleClass="regularbutton2" stylesheets="@style.css" text="Создать">
                                               <cursor>
                                                   <Cursor fx:constant="HAND" />
                                               </cursor>
@@ -156,12 +156,33 @@
                                                   <Font name="Roboto Medium" size="20.0" />
                                               </font>
                                           </Button>
-                                          <Button fx:id="createNewStep" layoutX="58.0" layoutY="480.0" mnemonicParsing="false" onAction="#createNewStep" prefHeight="38.0" prefWidth="64.0" styleClass="addbutton" stylesheets="@style.css" text="Button" />
+                                          <Button fx:id="createNewStep" layoutX="101.0" layoutY="478.0" mnemonicParsing="false" onAction="#createNewStep" prefHeight="38.0" prefWidth="64.0" styleClass="addbutton" stylesheets="@style.css" text="Button" />
                                           <VBox fx:id="recipeElementsVBox" layoutX="218.0" layoutY="404.0" prefHeight="315.0" prefWidth="678.0">
                                               <children>
                                                   <AnchorPane fx:id="stepAnchorPane" prefHeight="186.0" prefWidth="678.0" />
                                               </children>
                                           </VBox>
+                                          <Button fx:id="removeStep" layoutX="101.0" layoutY="528.0" mnemonicParsing="false" onAction="#removeStep" prefHeight="38.0" prefWidth="64.0" styleClass="removebutton" stylesheets="@style.css" text="Button" />
+                                          <TextField fx:id="recipeCategoryField" alignment="TOP_LEFT" layoutX="220.0" layoutY="193.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="150.0" styleClass="textinput" stylesheets="@style.css">
+                                              <font>
+                                                  <Font name="Roboto Medium" size="19.0" />
+                                              </font>
+                                          </TextField>
+                                          <Label fx:id="previewRecipeTitleLabel1122" alignment="CENTER" layoutX="87.0" layoutY="199.0" opacity="0.25" prefHeight="26.0" prefWidth="117.0" text="Категория" wrapText="true">
+                                              <font>
+                                                  <Font name="Roboto" size="21.0" />
+                                              </font>
+                                          </Label>
+                                          <TextField fx:id="recipeCuisineField" alignment="TOP_LEFT" layoutX="480.0" layoutY="193.0" onInputMethodTextChanged="#onLinkInput" prefHeight="38.0" prefWidth="122.0" styleClass="textinput" stylesheets="@style.css">
+                                              <font>
+                                                  <Font name="Roboto Medium" size="19.0" />
+                                              </font>
+                                          </TextField>
+                                          <Label fx:id="previewRecipeTitleLabel11221" alignment="CENTER" layoutX="387.0" layoutY="199.0" opacity="0.25" prefHeight="26.0" prefWidth="81.0" text="Кухня" wrapText="true">
+                                              <font>
+                                                  <Font name="Roboto" size="21.0" />
+                                              </font>
+                                          </Label>
                                       </children>
                                   </AnchorPane>
                               </content>
